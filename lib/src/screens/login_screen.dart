@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_bloc/src/blocs/bloc.dart';
 
 class LoginScreen extends StatelessWidget {
   @override
@@ -16,24 +17,47 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget emailField() {
-    return TextField(
-        keyboardType: TextInputType.emailAddress,
-        decoration: InputDecoration(
-            hintText: 'you@example.com', labelText: 'Email Address'));
+    return StreamBuilder<String>(
+      stream: bloc.email,
+      builder: (context, snapshot) {
+        return TextField(
+            onChanged: bloc.changeEmail,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+                hintText: 'you@example.com',
+                labelText: 'Email address',
+                errorText: snapshot.error
+            )
+        );
+      }
+    );
   }
 
   Widget passwordField() {
-    return TextField(
-      //obscureText: true,
-      decoration: InputDecoration(hintText: 'Password', labelText: 'Password'),
+    return StreamBuilder<String>(
+      stream: bloc.password,
+      builder: (context, snapshot) {
+        return TextField(
+          //obscureText: true,
+          onChanged: bloc.changePassword,
+          decoration: InputDecoration(hintText: 'Password', labelText: 'Password', errorText: snapshot.error),
+        );
+      }
     );
   }
 
   Widget submitButton() {
-    return RaisedButton(
-      child: Text('Login', style: TextStyle(color: Colors.white)),
-      color: Colors.lightBlue,
-      onPressed: () {},
+    return StreamBuilder(
+      stream: bloc.submitValid,
+      builder: (context, snapshot) {
+        return RaisedButton(
+          shape: StadiumBorder(),
+          child: Text('Login', style: TextStyle(color: Colors.white)),
+          color: Colors.lightBlue,
+          onPressed: snapshot.hasData ? bloc.submit : null
+        );
+      }
     );
   }
+
 }
